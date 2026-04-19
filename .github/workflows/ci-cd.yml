@@ -1,0 +1,31 @@
+name: DevOps Hero CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: self-hosted
+
+    steps:
+      - name: 📥 Checkout kode
+        uses: actions/checkout@v3
+
+      - name: 🐳 Build Docker image
+        run: docker build -t devops-hero:latest .
+
+      - name: ✅ Test - jalankan container
+        run: |
+          docker run -d --name test-app -p 5000:5000 devops-hero:latest
+          sleep 3
+          curl http://localhost:5000/health
+          docker stop test-app
+          docker rm test-app
+
+      - name: 🚀 Deploy - jalankan container production
+        run: |
+          docker stop devops-hero-prod || true
+          docker rm devops-hero-prod || true
+          docker run -d --name devops-hero-prod -p 5000:5000 devops-hero:latest
+          echo "✅ App berhasil di-deploy di http://localhost:5000"
