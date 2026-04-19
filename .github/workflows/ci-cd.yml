@@ -17,9 +17,11 @@ jobs:
 
       - name: ✅ Test - jalankan container
         run: |
-          docker run -d --name test-app -p 5000:5000 devops-hero:latest
+          docker stop test-app || true
+          docker rm test-app || true
+          docker run -d --name test-app -p 5001:5000 devops-hero:latest
           sleep 3
-          curl http://localhost:5000/health
+          curl http://localhost:5001/health
           docker stop test-app
           docker rm test-app
 
